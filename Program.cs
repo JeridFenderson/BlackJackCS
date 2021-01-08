@@ -42,7 +42,32 @@ namespace BlackJackCS
             }
 
         }
+        static List<Card> Build(List<Card> deckToBeBuilt)
+        {
+            var listOfSuits = new List<string>()
+                 {
+                    " of Spades", " of Clubs", " of Hearts", " of Diamonds"
+                  };
+            var listOfRanks = new List<string>()
+                 {
+                    "Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"
+                  };
+            foreach (var suit in listOfSuits)
+            {
+                foreach (var rank in listOfRanks)
+                {
+                    var newCard = new Card()
+                    {
+                        Rank = rank,
+                        Suit = suit,
+                    };
+                    deckToBeBuilt.Add(newCard);
+                }
+            }
+            return deckToBeBuilt;
+        }
         static List<Card> Shuffle(List<Card> deckToBeShuffled)
+        // Method that shuffles deck on command
         {
             var lastUnmovedCardPosition = deckToBeShuffled.Count;
             var randomNumber = 0;
@@ -83,44 +108,24 @@ namespace BlackJackCS
             while (PlayAgain(prompt, roundCounter) == "yes")
             {
                 var deck = new List<Card>();
-                var listOfSuits = new List<string>()
-                 {
-                    " of Spades", " of Clubs", " of Hearts", " of Diamonds"
-                  };
-                var listOfRanks = new List<string>()
-                 {
-                    "Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"
-                  };
-                foreach (var suit in listOfSuits)
-                {
-                    foreach (var rank in listOfRanks)
-                    {
-                        var newCard = new Card()
-                        {
-                            Rank = rank,
-                            Suit = suit,
-                        };
-                        deck.Add(newCard);
-                    }
-                }
+                deck = new List<Card>(Build(deck));
                 foreach (var card in deck)
                 {
                     Console.WriteLine(card.Rank + card.Suit + " Value of " + card.Value());
 
                 }
+
                 deck = new List<Card>(Shuffle(deck));
-
                 foreach (var card in deck)
                 {
                     Console.WriteLine(card.Rank + card.Suit + " Value of " + card.Value());
                 }
+
                 roundCounter++;
                 if (roundCounter > 0)
                     prompt = "Would you like to play again?";
             }
-
         }
-
     }
 }
 
