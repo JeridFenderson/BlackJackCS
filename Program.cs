@@ -18,6 +18,7 @@ namespace BlackJackCS
                 return cardValueCounter;
             }
             public int PlayerNumber { get; set; }
+            public string PlayerName { get; set; }
             public int Wins { get; set; }
         }
         class Card
@@ -67,12 +68,15 @@ namespace BlackJackCS
         {
             for (var i = 1; i <= numberOfPlayers; i++)
             {
+                Console.Write($"What is Player {i}'s name? ");
                 var newPlayer = new Player()
                 {
                     PlayerNumber = i,
                     Wins = 0,
+                    PlayerName = Console.ReadLine(),
                 };
                 playersToBeAdded.Add(newPlayer);
+                Console.WriteLine($"Got it. Welcome {newPlayer.PlayerName}!\n");
             }
             return playersToBeAdded;
         }
@@ -119,6 +123,7 @@ namespace BlackJackCS
         }
 
         static List<Card> RemoveTwoCards(List<Card> deckBeforeRemoved)
+        // Method that Removes two cards from deck on command
         {
             deckBeforeRemoved.Remove(deckBeforeRemoved[0]);
             deckBeforeRemoved.Remove(deckBeforeRemoved[0]);
@@ -152,10 +157,7 @@ namespace BlackJackCS
             var prompt = "Would you like to start the game?";
             var roundCounter = 0;
             var computer = new Player();
-
-
             var playersList = new List<Player>();
-
             Console.Write("How many players are there? ");
             var numOfPlayers = int.Parse(Console.ReadLine());
             while (numOfPlayers < 0 || numOfPlayers > 10)
@@ -165,13 +167,6 @@ namespace BlackJackCS
             }
             var listOfPlayers = new List<Player>();
             listOfPlayers = new List<Player>(Roster(listOfPlayers, numOfPlayers));
-
-
-
-
-
-
-            var player = new Player();
 
             while (PlayAgain(prompt, roundCounter).ToLower() == "yes")
             {
@@ -185,75 +180,92 @@ namespace BlackJackCS
                 Console.WriteLine("Dealer's cards have been dealt.");
                 Console.WriteLine($"Dealer flipped a {computer.CardsInHand[0].Rank}{computer.CardsInHand[0].Suit}\n");
 
-                player.CardsInHand = new List<Card>() { deck[0], deck[1] };
-                deck = new List<Card>(RemoveTwoCards(deck));
-                foreach (var card in player.CardsInHand)
+                foreach (var player in listOfPlayers)
                 {
-                    Console.WriteLine($"You've been dealt a {card.Rank}{card.Suit}");
-                }
-                Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
+                    player.CardsInHand = new List<Card>() { deck[0], deck[1] };
+                    deck = new List<Card>(RemoveTwoCards(deck));
+                    Console.WriteLine($"It's your turn {player.PlayerName}");
+                    foreach (var card in player.CardsInHand)
+                    {
+                        Console.WriteLine($"You've been dealt a {card.Rank}{card.Suit}");
+                    }
+                    Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
 
-                var playerChoice = "";
-                while (player.TotalCardsInHandValue() < 21 && playerChoice.ToLower() != "stand")
-                {
-                    Console.Write("\nWould you like to 'hit' or 'stand'? ");
-                    playerChoice = Console.ReadLine();
-                    Console.WriteLine("");
-                    var currentCardInHand = 2;
-                    if (playerChoice.ToLower() == "hit")
+                    var playerChoice = "";
+                    while (player.TotalCardsInHandValue() < 21 && playerChoice.ToLower() != "stand")
                     {
-                        player.CardsInHand.Add(deck[0]);
-                        deck.Remove(deck[0]);
-                        Console.WriteLine($"You've been dealt a {player.CardsInHand[currentCardInHand].Rank}{player.CardsInHand[currentCardInHand].Suit}");
-                        Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
-                        currentCardInHand++;
-                    }
-                    else if (playerChoice.ToLower() == "stand")
-                    {
-                        Console.WriteLine("Moving onto Dealer's hand...");
-                    }
-                    else if (playerChoice.ToLower() != "hit" || playerChoice.ToLower() != "stand")
-                    {
-                        Console.WriteLine("Please either enter 'hit' or 'stand'.");
-                        Console.WriteLine("It's not case sensitive, but it is spelling sensitive.");
-                    }
-                }
 
-                if (player.TotalCardsInHandValue() > 21)
-                {
-                    Console.WriteLine("\nYou busted! You lost this round\n");
-                }
-                else
-                {
-                    while (computer.TotalCardsInHandValue() < 17)
+
+                        Console.Write($"\nWould you like to 'hit' or 'stand' {player.PlayerName}? ");
+                        playerChoice = Console.ReadLine();
+                        Console.WriteLine("");
+                        var currentCardInHand = 2;
+                        if (playerChoice.ToLower() == "hit")
+                        {
+                            player.CardsInHand.Add(deck[0]);
+                            deck.Remove(deck[0]);
+                            Console.WriteLine($"You've been dealt a {player.CardsInHand[currentCardInHand].Rank}{player.CardsInHand[currentCardInHand].Suit}");
+                            Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
+                            currentCardInHand++;
+                        }
+                        else if (playerChoice.ToLower() == "stand")
+                        {
+                            Console.WriteLine("Moving onto next hand...");
+                        }
+                        else if (playerChoice.ToLower() != "hit" || playerChoice.ToLower() != "stand")
+                        {
+                            Console.WriteLine("Please either enter 'hit' or 'stand'.");
+                            Console.WriteLine("It's not case sensitive, but it is spelling sensitive.");
+                        }
+                    }
+
+                    if (player.TotalCardsInHandValue() > 21)
                     {
-                        computer.CardsInHand.Add(deck[0]);
-                        deck.Remove(deck[0]);
+                        Console.WriteLine($"\nYou busted, {player.PlayerName}! You lost this round\n");
+                    }
+                    else if (player.TotalCardsInHandValue() == 21)
+                    {
+                        Console.WriteLine($"\nYou have 21, {player.PlayerName}! You're not hitting again!");
+                    }
+                    else
+                    {
+                        while (computer.TotalCardsInHandValue() < 17)
+                        {
+                            computer.CardsInHand.Add(deck[0]);
+                            deck.Remove(deck[0]);
+                        }
                     }
                 }
-
                 if (computer.TotalCardsInHandValue() > 21)
                 {
-                    Console.WriteLine("\nThe dealer busted! You won this round\n");
-                    player.Wins++;
+                    Console.WriteLine("\nThe dealer busted! Everyone who didn't bust won this round\n");
+                    foreach (var player in listOfPlayers)
+                    {
+                        if (player.TotalCardsInHandValue() <= 21)
+                        {
+                            player.Wins++;
+                        }
+                    }
                 }
                 else
                 {
-                    if (computer.TotalCardsInHandValue() > player.TotalCardsInHandValue())
+                    foreach (var player in listOfPlayers)
                     {
-                        Console.WriteLine("\nYou lost to Dealer this round.\n");
-                    }
-                    else if (computer.TotalCardsInHandValue() > player.TotalCardsInHandValue())
-                    {
-                        Console.WriteLine("\nYou beat Dealer this round!\n");
-                        player.Wins++;
-                    }
-                    else if (computer.TotalCardsInHandValue() == player.TotalCardsInHandValue())
-                    {
-                        Console.WriteLine("\nYou tied with Dealer. Dealer wins by default.\n");
+                        if (computer.TotalCardsInHandValue() > player.TotalCardsInHandValue())
+                        {
+                            Console.WriteLine($"\n{player.PlayerName} lost to Dealer this round.\n");
+                        }
+                        else if (computer.TotalCardsInHandValue() < player.TotalCardsInHandValue() && player.TotalCardsInHandValue() <= 21)
+                        {
+                            Console.WriteLine($"\n{player.PlayerName} beat Dealer this round!\n");
+                            player.Wins++;
+                        }
+                        else if (computer.TotalCardsInHandValue() == player.TotalCardsInHandValue())
+                        {
+                            Console.WriteLine($"\n{player.PlayerName} tied with Dealer. Dealer wins by default.\n");
+                        }
                     }
                 }
-                Console.WriteLine($"{player.Wins} of wins so far!");
                 roundCounter++;
                 if (roundCounter > 0)
                     prompt = "Would you like to play again?";
