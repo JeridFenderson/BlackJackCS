@@ -154,7 +154,7 @@ namespace BlackJackCS
         static void Main(string[] args)
         {
             Welcome();
-            var prompt = "Would you like to start the game?";
+            var prompt = "What would you like to do?";
             var roundCounter = 0;
             var computer = new Player();
             var playersList = new List<Player>();
@@ -168,7 +168,7 @@ namespace BlackJackCS
             var listOfPlayers = new List<Player>();
             listOfPlayers = new List<Player>(Roster(listOfPlayers, numOfPlayers));
 
-            while (PlayAgain(prompt, roundCounter).ToLower() == "yes")
+            while (PlayAgain(prompt, roundCounter).ToLower() == "play")
             {
                 var deck = new List<Card>();
                 deck = new List<Card>(Build(deck));
@@ -267,8 +267,6 @@ namespace BlackJackCS
                     }
                 }
                 roundCounter++;
-                if (roundCounter > 0)
-                    prompt = "Would you like to play again?";
             }
         }
     }
