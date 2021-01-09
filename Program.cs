@@ -17,6 +17,7 @@ namespace BlackJackCS
                 }
                 return cardValueCounter;
             }
+            public int PlayerNumber { get; set; }
             public int Wins { get; set; }
         }
         class Card
@@ -61,6 +62,19 @@ namespace BlackJackCS
             Console.WriteLine("Welcome to Black Jack");
             Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~");
             Console.WriteLine("\n");
+        }
+        static List<Player> Roster(List<Player> playersToBeAdded, int numberOfPlayers)
+        {
+            for (var i = 1; i <= numberOfPlayers; i++)
+            {
+                var newPlayer = new Player()
+                {
+                    PlayerNumber = i,
+                    Wins = 0,
+                };
+                playersToBeAdded.Add(newPlayer);
+            }
+            return playersToBeAdded;
         }
         static List<Card> Build(List<Card> deckToBeBuilt)
         {
@@ -114,7 +128,11 @@ namespace BlackJackCS
         static string PlayAgain(string playQuestion, int roundNumber)
         // Method that takes in a string question and a round number integer and outputs a string and readLine variable
         {
-            if (roundNumber == 1)
+            if (roundNumber == 0)
+            {
+
+            }
+            else if (roundNumber == 1)
             {
                 Console.WriteLine($"You've played Black Jack {roundNumber} time.\n");
             }
@@ -131,11 +149,29 @@ namespace BlackJackCS
         static void Main(string[] args)
         {
             Welcome();
-            var prompt = "Would you like to play Black Jack?";
+            var prompt = "Would you like to start the game?";
             var roundCounter = 0;
             var computer = new Player();
+
+
+            var playersList = new List<Player>();
+
+            Console.Write("How many players are there? ");
+            var numOfPlayers = int.Parse(Console.ReadLine());
+            while (numOfPlayers < 0 || numOfPlayers > 10)
+            {
+                Console.WriteLine("Min to max player size is 1 to 10: ");
+                numOfPlayers = int.Parse(Console.ReadLine());
+            }
+            var listOfPlayers = new List<Player>();
+            listOfPlayers = new List<Player>(Roster(listOfPlayers, numOfPlayers));
+
+
+
+
+
+
             var player = new Player();
-            player.Wins = 0;
 
             while (PlayAgain(prompt, roundCounter).ToLower() == "yes")
             {
@@ -144,17 +180,13 @@ namespace BlackJackCS
                 deck = new List<Card>(Shuffle(deck));
                 Console.WriteLine("Cards have been shuffled.");
 
-
                 computer.CardsInHand = new List<Card>() { deck[0], deck[1] };
                 deck = new List<Card>(RemoveTwoCards(deck));
                 Console.WriteLine("Dealer's cards have been dealt.");
                 Console.WriteLine($"Dealer flipped a {computer.CardsInHand[0].Rank}{computer.CardsInHand[0].Suit}\n");
 
-
-
                 player.CardsInHand = new List<Card>() { deck[0], deck[1] };
                 deck = new List<Card>(RemoveTwoCards(deck));
-
                 foreach (var card in player.CardsInHand)
                 {
                     Console.WriteLine($"You've been dealt a {card.Rank}{card.Suit}");
