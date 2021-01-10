@@ -8,52 +8,81 @@ namespace BlackJackCS
         class Player
         {
             public List<Card> CardsInHand { get; set; }
+            public int PlayerNumber { get; set; }
+            public string PlayerName { get; set; }
+            public int Wins { get; set; }
+            public bool IsComputer = false;
             public int TotalCardsInHandValue()
             {
                 var cardValueCounter = 0;
                 foreach (var card in CardsInHand)
                 {
-                    cardValueCounter += card.Value();
+                    if (card.CardValue == 0)
+                    {
+                        card.CardValue = SetCardValue(card, IsComputer);
+                    }
+                    cardValueCounter += card.CardValue;
                 }
                 return cardValueCounter;
             }
-            public int PlayerNumber { get; set; }
-            public string PlayerName { get; set; }
-            public int Wins { get; set; }
+
         }
         class Card
         //Class that builds each card individually and assigns an appropriate number value to the card face
         {
             public string Rank { get; set; }
             public string Suit { get; set; }
-            public int Value()
-            {
-                var cardValue = 0;
 
-                switch (Rank)
+            public int CardValue = 0;
+        }
+        static int SetCardValue(Card cardInHand, bool isComputer)
+        {
+            var Rank = cardInHand.Rank;
+            var cardValue = 0;
+            switch (Rank)
+            {
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                case "8":
+                case "9":
+                    cardValue = int.Parse(Rank);
+                    break;
+                case "10":
+                case "Jack":
+                case "Queen":
+                case "King":
+                    cardValue = 10;
+                    break;
+                case "Ace":
+                    cardValue = OneOrEleven(isComputer);
+                    break;
+            }
+            return cardValue;
+        }
+        static int OneOrEleven(bool isComputer)
+        {
+            if (isComputer)
+            {
+                return 11;
+            }
+            else
+            {
+                int cardValue = 0;
+                Console.Write("You have an Ace, is it worth '1' or '11'? ");
+                var cardValueAsString = Console.ReadLine();
+                while (cardValueAsString != "1" && cardValueAsString != "11")
                 {
-                    case "2":
-                    case "3":
-                    case "4":
-                    case "5":
-                    case "6":
-                    case "7":
-                    case "8":
-                    case "9":
-                        cardValue = int.Parse(Rank);
-                        break;
-                    case "10":
-                    case "Jack":
-                    case "Queen":
-                    case "King":
-                        cardValue = 10;
-                        break;
-                    case "Ace":
-                        cardValue = 11;
-                        break;
+                    Console.Write("Please enter either '1' or '11' only: ");
+                    cardValueAsString = Console.ReadLine();
                 }
+                cardValue = int.Parse(cardValueAsString);
                 return cardValue;
             }
+
         }
         static void Welcome()
         {
@@ -171,6 +200,7 @@ namespace BlackJackCS
             Console.WriteLine("Cards have been shuffled");
 
             var computer = new Player();
+            computer.IsComputer = true;
             computer.CardsInHand = new List<Card>() { deck[0], deck[1] };
             deck = new List<Card>(RemoveTwoCards(deck));
             Console.WriteLine("Dealer's cards have been dealt");
@@ -218,7 +248,7 @@ namespace BlackJackCS
                 }
                 else if (player.TotalCardsInHandValue() == 21)
                 {
-                    Console.WriteLine($"\nYou have 21, {player.PlayerName}! You're not hitting again!");
+                    Console.WriteLine($"\nYou have 21, {player.PlayerName}! You're not hitting again!\n");
                 }
                 else
                 {
@@ -334,7 +364,7 @@ namespace BlackJackCS
                         break;
                     default:
                         Console.WriteLine("That is not an option. Please enter 'help' to see a list of avaliable options");
-                        Console.WriteLine("It's not case sensitive, but it is spelling sensitive");
+                        Console.WriteLine("It's not case sensitive, but it is spelling sensitive\n");
                         menuSelection = PlayAgain().ToLower();
                         break;
                 }
