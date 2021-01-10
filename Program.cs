@@ -130,7 +130,7 @@ namespace BlackJackCS
             return deckBeforeRemoved;
         }
 
-        static string PlayAgain(string playQuestion, int roundNumber)
+        static string PlayAgain(int roundNumber)
         // Method that takes in a string question and a round number integer and outputs a string and readLine variable
         {
             if (roundNumber == 0)
@@ -139,14 +139,13 @@ namespace BlackJackCS
             }
             else if (roundNumber == 1)
             {
-                Console.WriteLine($"You've played Black Jack {roundNumber} time.\n");
+                Console.WriteLine($"You've played Black Jack {roundNumber} time\n");
             }
             else
             {
-                Console.WriteLine($"You've played Black Jack {roundNumber} times.\n");
+                Console.WriteLine($"You've played Black Jack {roundNumber} times\n");
             }
-            Console.WriteLine(playQuestion);
-            Console.Write("Enter anything other than 'yes' to stop: ");
+            Console.Write("What would you like to do? ");
             var yes = Console.ReadLine();
             Console.WriteLine("\n");
             return yes;
@@ -154,30 +153,32 @@ namespace BlackJackCS
         static void Main(string[] args)
         {
             Welcome();
-            var prompt = "What would you like to do?";
+
             var roundCounter = 0;
             var computer = new Player();
             var playersList = new List<Player>();
             Console.Write("How many players are there? ");
             var numOfPlayers = int.Parse(Console.ReadLine());
+            Console.WriteLine("");
             while (numOfPlayers < 0 || numOfPlayers > 10)
             {
-                Console.WriteLine("Min to max player size is 1 to 10: ");
+                Console.Write("Min to max player size is 1 to 10: ");
                 numOfPlayers = int.Parse(Console.ReadLine());
+                Console.WriteLine("");
             }
             var listOfPlayers = new List<Player>();
             listOfPlayers = new List<Player>(Roster(listOfPlayers, numOfPlayers));
 
-            while (PlayAgain(prompt, roundCounter).ToLower() == "play")
+            while (PlayAgain(roundCounter).ToLower() != "exit")
             {
                 var deck = new List<Card>();
                 deck = new List<Card>(Build(deck));
                 deck = new List<Card>(Shuffle(deck));
-                Console.WriteLine("Cards have been shuffled.");
+                Console.WriteLine("Cards have been shuffled");
 
                 computer.CardsInHand = new List<Card>() { deck[0], deck[1] };
                 deck = new List<Card>(RemoveTwoCards(deck));
-                Console.WriteLine("Dealer's cards have been dealt.");
+                Console.WriteLine("Dealer's cards have been dealt");
                 Console.WriteLine($"Dealer flipped a {computer.CardsInHand[0].Rank}{computer.CardsInHand[0].Suit}\n");
 
                 foreach (var player in listOfPlayers)
@@ -194,8 +195,6 @@ namespace BlackJackCS
                     var playerChoice = "";
                     while (player.TotalCardsInHandValue() < 21 && playerChoice.ToLower() != "stand")
                     {
-
-
                         Console.Write($"\nWould you like to 'hit' or 'stand' {player.PlayerName}? ");
                         playerChoice = Console.ReadLine();
                         Console.WriteLine("");
@@ -210,12 +209,12 @@ namespace BlackJackCS
                         }
                         else if (playerChoice.ToLower() == "stand")
                         {
-                            Console.WriteLine("Moving onto next hand...");
+                            Console.WriteLine("Moving onto next hand...\n");
                         }
                         else if (playerChoice.ToLower() != "hit" || playerChoice.ToLower() != "stand")
                         {
-                            Console.WriteLine("Please either enter 'hit' or 'stand'.");
-                            Console.WriteLine("It's not case sensitive, but it is spelling sensitive.");
+                            Console.WriteLine("Please either enter 'hit' or 'stand'");
+                            Console.WriteLine("It's not case sensitive, but it is spelling sensitive");
                         }
                     }
 
@@ -253,16 +252,16 @@ namespace BlackJackCS
                     {
                         if (computer.TotalCardsInHandValue() > player.TotalCardsInHandValue())
                         {
-                            Console.WriteLine($"\n{player.PlayerName} lost to Dealer this round.\n");
+                            Console.WriteLine($"{player.PlayerName} lost to Dealer this round\n");
                         }
                         else if (computer.TotalCardsInHandValue() < player.TotalCardsInHandValue() && player.TotalCardsInHandValue() <= 21)
                         {
-                            Console.WriteLine($"\n{player.PlayerName} beat Dealer this round!\n");
+                            Console.WriteLine($"{player.PlayerName} beat Dealer this round!\n");
                             player.Wins++;
                         }
                         else if (computer.TotalCardsInHandValue() == player.TotalCardsInHandValue())
                         {
-                            Console.WriteLine($"\n{player.PlayerName} tied with Dealer. Dealer wins by default.\n");
+                            Console.WriteLine($"{player.PlayerName} tied with Dealer. Dealer wins by default\n");
                         }
                     }
                 }
