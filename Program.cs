@@ -11,6 +11,8 @@ namespace BlackJackCS
             public int PlayerNumber { get; set; }
             public string PlayerName { get; set; }
             public int Wins { get; set; }
+            public int TotalPoints { get; set; }
+            public int PointsBetThisRound { get; set; }
             public bool IsComputer = false;
             public int TotalCardsInHandValue()
             {
@@ -128,7 +130,7 @@ namespace BlackJackCS
                 Console.WriteLine($"and {listOfPlayers[listOfPlayers.Count - 1].PlayerName}!\n");
             }
         }
-        static List<Player> Roster(List<Player> playersToBeAdded, int numberOfPlayers)
+        static List<Player> Roster(List<Player> playersToBeAdded, int numberOfPlayers, int startingPoints)
         {
             for (var i = 1; i <= numberOfPlayers; i++)
             {
@@ -137,6 +139,7 @@ namespace BlackJackCS
                 {
                     PlayerNumber = i,
                     Wins = 0,
+                    TotalPoints = startingPoints,
                     PlayerName = Console.ReadLine(),
                 };
                 playersToBeAdded.Add(newPlayer);
@@ -192,7 +195,96 @@ namespace BlackJackCS
             deckBeforeRemoved.Remove(deckBeforeRemoved[0]);
             return deckBeforeRemoved;
         }
-        static List<Player> PlayBlackjack(List<Player> listOfPlayers)
+        static Player PlaceBets(Player player)
+        {
+            Console.Write("In increments of 20, how many chips would you like to bet this round? ");
+            var individualBetAsString = Console.ReadLine();
+            while (player.PointsBetThisRound == 0)
+            {
+                switch (individualBetAsString)
+                {
+                    case "20":
+                        if (player.TotalPoints == 20)
+                        {
+                            Console.WriteLine($"\n{player.PlayerName}...you better win this round...");
+                            Console.WriteLine("...or you're going to have no chips left...\n");
+                            player.PointsBetThisRound = 20;
+                            break;
+                        }
+                        else
+                        {
+                            player.PointsBetThisRound = 20;
+                            break;
+                        }
+                    case "40":
+                        if (player.TotalPoints < 40)
+                        {
+                            Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                            individualBetAsString = Console.ReadLine();
+                            break;
+                        }
+                        else
+                        {
+                            player.PointsBetThisRound = 40;
+                            break;
+                        }
+                    case "60":
+                        if (player.TotalPoints < 60)
+                        {
+                            Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                            individualBetAsString = Console.ReadLine();
+                            break;
+                        }
+                        else
+                        {
+                            player.PointsBetThisRound = 60;
+                            break;
+                        }
+                    case "80":
+                        if (player.TotalPoints < 80)
+                        {
+                            Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                            individualBetAsString = Console.ReadLine();
+                            break;
+                        }
+                        else
+                        {
+                            player.PointsBetThisRound = 80;
+                            break;
+                        }
+                    case "100":
+                        if (player.TotalPoints < 100)
+                        {
+                            Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                            individualBetAsString = Console.ReadLine();
+                            break;
+                        }
+                        else
+                        {
+                            player.PointsBetThisRound = 100;
+                            break;
+                        }
+                    default:
+                        Console.Write("\nPlease bet either '20', '40', '60', '80' or '100' chips: ");
+                        individualBetAsString = Console.ReadLine();
+                        break;
+                }
+            }
+            return player;
+        }
+        static Player AddChips(Player player)
+        {
+            player.TotalPoints = player.TotalPoints + player.PointsBetThisRound;
+            player.PointsBetThisRound = 0;
+            return player;
+        }
+        static Player RemoveChips(Player player)
+        {
+            player.TotalPoints = player.TotalPoints - player.PointsBetThisRound;
+            player.PointsBetThisRound = 0;
+            return player;
+        }
+        static List<Player> PlayBlackjack(List<Player> listOfPlayers, bool keepingScore)
         {
             var deck = new List<Card>();
             deck = new List<Card>(Build(deck));
@@ -211,6 +303,18 @@ namespace BlackJackCS
                 player.CardsInHand = new List<Card>() { deck[0], deck[1] };
                 deck = new List<Card>(RemoveTwoCards(deck));
                 Console.WriteLine($"It's your turn {player.PlayerName}");
+                if (keepingScore)
+                {
+                    if (player.TotalPoints != 0)
+                    {
+                        PlaceBets(player);
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nYou have no chips to bet...");
+                        Console.WriteLine("...you filthy animal...\n");
+                    }
+                }
                 foreach (var card in player.CardsInHand)
                 {
                     Console.WriteLine($"You've been dealt a {card.Rank}{card.Suit}");
@@ -245,6 +349,8 @@ namespace BlackJackCS
                 if (player.TotalCardsInHandValue() > 21)
                 {
                     Console.WriteLine($"\nYou busted, {player.PlayerName}! You lost this round\n");
+                    if (keepingScore)
+                        RemoveChips(player);
                 }
                 else if (player.TotalCardsInHandValue() == 21)
                 {
@@ -267,6 +373,8 @@ namespace BlackJackCS
                     if (player.TotalCardsInHandValue() <= 21)
                     {
                         player.Wins++;
+                        if (keepingScore)
+                            AddChips(player);
                     }
                 }
             }
@@ -277,21 +385,56 @@ namespace BlackJackCS
                     if (computer.TotalCardsInHandValue() > player.TotalCardsInHandValue())
                     {
                         Console.WriteLine($"{player.PlayerName} lost to the Dealer this round\n");
+                        if (keepingScore)
+                            RemoveChips(player);
                     }
                     else if (computer.TotalCardsInHandValue() < player.TotalCardsInHandValue() && player.TotalCardsInHandValue() <= 21)
                     {
                         Console.WriteLine($"{player.PlayerName} beat the Dealer this round!\n");
+                        if (keepingScore)
+                            AddChips(player);
                         player.Wins++;
                     }
                     else if (computer.TotalCardsInHandValue() == player.TotalCardsInHandValue())
                     {
                         Console.WriteLine($"{player.PlayerName} tied the with Dealer. The Dealer wins by default\n");
+                        if (keepingScore)
+                            RemoveChips(player);
                     }
+                }
+            }
+            if (keepingScore)
+            {
+                var hasPointsLeft = 0;
+                foreach (var player in listOfPlayers)
+                {
+                    if (player.TotalPoints > 0)
+                        hasPointsLeft++;
+                }
+                if (hasPointsLeft > 2 || (listOfPlayers.Count == 1 && listOfPlayers[0].TotalPoints > 40))
+                {
+                    Console.WriteLine("The table is still going strong!");
+                }
+                else if (hasPointsLeft == 2 || (listOfPlayers.Count == 1 && listOfPlayers[0].TotalPoints < 40))
+                {
+                    Console.WriteLine("The table is a bit shakey! Someone's going to lose soon, maybe!");
+                }
+                else
+                {
+                    foreach (var player in listOfPlayers)
+                    {
+                        if (player.TotalPoints != 0)
+                            Console.WriteLine($"{player.PlayerName} won the game!");
+                    }
+                    Console.WriteLine("\n\nGet out of here! You don't bet points, lose all your points, and then keep playing!");
+                    Console.WriteLine("No seriously, what do you think you're still doing here?");
+                    Console.WriteLine("If you want a sandbox, don't keep score next time!\n\n");
+                    System.Environment.Exit(0);
                 }
             }
             return listOfPlayers;
         }
-        static void SeeStats(List<Player> listOfPlayers, int roundNumber)
+        static void SeeStats(List<Player> listOfPlayers, int roundNumber, bool scoreKeeper)
         {
             if (roundNumber == 1)
             {
@@ -301,16 +444,32 @@ namespace BlackJackCS
             {
                 Console.WriteLine($"You've played Blackjack {roundNumber} times\n");
             }
-
-            foreach (var player in listOfPlayers)
+            if (scoreKeeper)
             {
-                if (player.Wins == 1)
+                foreach (var player in listOfPlayers)
                 {
-                    Console.WriteLine($"{player.PlayerName} won {player.Wins} time");
+                    if (player.Wins == 1)
+                    {
+                        Console.WriteLine($"{player.PlayerName} won {player.Wins} time and has {player.TotalPoints} chips");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{player.PlayerName} won {player.Wins} times and has {player.TotalPoints} chips");
+                    }
                 }
-                else
+            }
+            else
+            {
+                foreach (var player in listOfPlayers)
                 {
-                    Console.WriteLine($"{player.PlayerName} won {player.Wins} times");
+                    if (player.Wins == 1)
+                    {
+                        Console.WriteLine($"{player.PlayerName} won {player.Wins} time");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{player.PlayerName} won {player.Wins} times");
+                    }
                 }
             }
             Console.WriteLine("");
@@ -327,18 +486,66 @@ namespace BlackJackCS
         {
             Welcome();
             var roundCounter = 0;
+            var points = 0;
+            var scoreKeeper = false;
             var playersList = new List<Player>();
             Console.Write("How many players are there? ");
-            var numOfPlayers = int.Parse(Console.ReadLine());
+            var numOfPlayersAsString = Console.ReadLine();
             Console.WriteLine("");
-            while (numOfPlayers <= 0 || numOfPlayers > 7)
+            int numOfPlayers = 0;
+            while (numOfPlayers == 0)
             {
-                Console.Write("Min to max player size is 1 to 7: ");
-                numOfPlayers = int.Parse(Console.ReadLine());
-                Console.WriteLine("");
+                switch (numOfPlayersAsString)
+                {
+                    case "1":
+                        numOfPlayers = 1;
+                        break;
+                    case "2":
+                        numOfPlayers = 2;
+                        break;
+                    case "3":
+                        numOfPlayers = 3;
+                        break;
+                    case "4":
+                        numOfPlayers = 4;
+                        break;
+                    case "5":
+                        numOfPlayers = 5;
+                        break;
+                    case "6":
+                        numOfPlayers = 6;
+                        break;
+                    case "7":
+                        numOfPlayers = 7;
+                        break;
+                    default:
+                        Console.Write("\nMin to max player size is 1 to 7: ");
+                        numOfPlayersAsString = Console.ReadLine();
+                        break;
+                }
             }
+            Console.WriteLine("");
+            Console.Write("Do you want a betting system that keeps a points based score? ");
+            var toKeepScore = Console.ReadLine();
+            while (toKeepScore != "yes" && toKeepScore != "no")
+            {
+                Console.Write("Please say 'yes' or 'no': ");
+                toKeepScore = Console.ReadLine();
+            }
+            if (toKeepScore == "yes")
+            {
+                scoreKeeper = true;
+                points = 100;
+                Console.WriteLine("Keeping score, you all will start out with 100 chips");
+            }
+            else
+            {
+                Console.WriteLine("Ok, got it. No active score will be kept this game");
+            }
+
+            Console.WriteLine("");
             var listOfPlayers = new List<Player>();
-            listOfPlayers = new List<Player>(Roster(listOfPlayers, numOfPlayers));
+            listOfPlayers = new List<Player>(Roster(listOfPlayers, numOfPlayers, points));
 
             var menuSelection = PlayAgain().ToLower();
             while (menuSelection != "exit")
@@ -346,12 +553,12 @@ namespace BlackJackCS
                 switch (menuSelection)
                 {
                     case "play":
-                        listOfPlayers = PlayBlackjack(listOfPlayers);
+                        listOfPlayers = PlayBlackjack(listOfPlayers, scoreKeeper);
                         roundCounter++;
                         menuSelection = PlayAgain().ToLower();
                         break;
                     case "stats":
-                        SeeStats(listOfPlayers, roundCounter);
+                        SeeStats(listOfPlayers, roundCounter, scoreKeeper);
                         menuSelection = PlayAgain().ToLower();
                         break;
                     case "help":
