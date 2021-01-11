@@ -6,6 +6,7 @@ namespace BlackJackCS
     class Program
     {
         class Player
+        // Class that stores all individual player information needed to properly run game 
         {
             public List<Card> CardsInHand { get; set; }
             public int PlayerNumber { get; set; }
@@ -115,6 +116,7 @@ namespace BlackJackCS
             }
         }
         static List<Player> Roster(List<Player> playersToBeAdded, int numberOfPlayers, int startingPoints)
+        // Method that builds a list of players using the Player class to create each player individually
         {
             for (var i = 1; i <= numberOfPlayers; i++)
             {
@@ -132,7 +134,7 @@ namespace BlackJackCS
             return playersToBeAdded;
         }
         class Card
-        //Class that builds each card individually and assigns an appropriate number value to the card face
+        // Class that stores each card individually and assigns an appropriate number value to the card face
         {
             public string Rank { get; set; }
             public string Suit { get; set; }
@@ -183,6 +185,7 @@ namespace BlackJackCS
             }
         }
         static List<Card> Build(List<Card> deckToBeBuilt)
+        // Method that builds deck, using the Card class to create each card and places each card in a list
         {
             var listOfSuits = new List<string>()
                  {
@@ -231,12 +234,14 @@ namespace BlackJackCS
             return deckBeforeRemoved;
         }
         static void Welcome()
+        // Method that greets player(s) upon start of program
         {
             Console.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~");
             Console.WriteLine("Welcome to Blackjack!");
             Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~\n");
         }
         static void Goodbye()
+        // Method that says goodbye to players(s) upon the end of program
         {
             Console.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~");
             Console.WriteLine("Thanks for Blackjack!");
@@ -244,6 +249,7 @@ namespace BlackJackCS
             Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~\n");
         }
         static void Help()
+        // Method that displays a help menu with commands upon user request
         {
             Console.WriteLine("\nTo play a round of Blackjack, enter 'play'");
             Console.WriteLine("To see current game stats, including player wins, enter 'stats'");
@@ -251,6 +257,7 @@ namespace BlackJackCS
             Console.WriteLine("To leave the table/exit the program, enter 'exit'\n");
         }
         static void Rules(List<Player> listOfPlayers)
+        // Method that displays rules of Blackjack upon user request
         {
             Console.WriteLine("\nBlackjack is a card game where the goal is to either get 21 or beat the Dealer's score without going over 21");
             Console.WriteLine("Each card has a value equal to itself, except face cards and the Ace. All face are equal to 10 while the Ace equals 11");
@@ -282,6 +289,7 @@ namespace BlackJackCS
             }
         }
         static List<Player> PlayBlackjack(List<Player> listOfPlayers, bool keepingScore)
+        // Method that plays a round of Blackjack with all the current players in this game
         {
             var deck = new List<Card>();
             deck = new List<Card>(Build(deck));
@@ -434,6 +442,7 @@ namespace BlackJackCS
             return listOfPlayers;
         }
         static void SeeStats(List<Player> listOfPlayers, int roundNumber, bool scoreKeeper)
+        // Method that displays stats of all players within Blackjack for the whole game
         {
             if (roundNumber == 1)
             {
