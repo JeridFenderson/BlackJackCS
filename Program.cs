@@ -21,70 +21,214 @@ namespace BlackJackCS
                 {
                     if (card.CardValue == 0)
                     {
-                        card.CardValue = SetCardValue(card, IsComputer);
+                        card.CardValue = card.SetCardValue(IsComputer);
                     }
                     cardValueCounter += card.CardValue;
                 }
                 return cardValueCounter;
             }
-
+            public void PlaceBets()
+            {
+                Console.Write("In increments of 20, how many chips would you like to bet this round? ");
+                var individualBetAsString = Console.ReadLine();
+                while (PointsBetThisRound == 0)
+                {
+                    switch (individualBetAsString)
+                    {
+                        case "20":
+                            if (TotalPoints == 20)
+                            {
+                                Console.WriteLine($"\n{PlayerName}...you better win this round...");
+                                Console.WriteLine("...or you're going to have no chips left...\n");
+                                PointsBetThisRound = 20;
+                                break;
+                            }
+                            else
+                            {
+                                PointsBetThisRound = 20;
+                                break;
+                            }
+                        case "40":
+                            if (TotalPoints < 40)
+                            {
+                                Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                                individualBetAsString = Console.ReadLine();
+                                break;
+                            }
+                            else
+                            {
+                                PointsBetThisRound = 40;
+                                break;
+                            }
+                        case "60":
+                            if (TotalPoints < 60)
+                            {
+                                Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                                individualBetAsString = Console.ReadLine();
+                                break;
+                            }
+                            else
+                            {
+                                PointsBetThisRound = 60;
+                                break;
+                            }
+                        case "80":
+                            if (TotalPoints < 80)
+                            {
+                                Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                                individualBetAsString = Console.ReadLine();
+                                break;
+                            }
+                            else
+                            {
+                                PointsBetThisRound = 80;
+                                break;
+                            }
+                        case "100":
+                            if (TotalPoints < 100)
+                            {
+                                Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                                individualBetAsString = Console.ReadLine();
+                                break;
+                            }
+                            else
+                            {
+                                PointsBetThisRound = 100;
+                                break;
+                            }
+                        default:
+                            Console.Write("\nPlease bet either '20', '40', '60', '80' or '100' chips: ");
+                            individualBetAsString = Console.ReadLine();
+                            break;
+                    }
+                }
+            }
+            public void AddChips()
+            {
+                TotalPoints = TotalPoints + PointsBetThisRound;
+                PointsBetThisRound = 0;
+            }
+            public void RemoveChips()
+            {
+                TotalPoints = TotalPoints - PointsBetThisRound;
+                PointsBetThisRound = 0;
+            }
+        }
+        static List<Player> Roster(List<Player> playersToBeAdded, int numberOfPlayers, int startingPoints)
+        {
+            for (var i = 1; i <= numberOfPlayers; i++)
+            {
+                Console.Write($"What is Player {i}'s name? ");
+                var newPlayer = new Player()
+                {
+                    PlayerNumber = i,
+                    Wins = 0,
+                    TotalPoints = startingPoints,
+                    PlayerName = Console.ReadLine(),
+                };
+                playersToBeAdded.Add(newPlayer);
+                Console.WriteLine($"Got it. Welcome {newPlayer.PlayerName}!\n");
+            }
+            return playersToBeAdded;
         }
         class Card
         //Class that builds each card individually and assigns an appropriate number value to the card face
         {
             public string Rank { get; set; }
             public string Suit { get; set; }
-
             public int CardValue = 0;
-        }
-        static int SetCardValue(Card cardInHand, bool isComputer)
-        {
-            var Rank = cardInHand.Rank;
-            var cardValue = 0;
-            switch (Rank)
+            public int SetCardValue(bool isComputer)
             {
-                case "2":
-                case "3":
-                case "4":
-                case "5":
-                case "6":
-                case "7":
-                case "8":
-                case "9":
-                    cardValue = int.Parse(Rank);
-                    break;
-                case "10":
-                case "Jack":
-                case "Queen":
-                case "King":
-                    cardValue = 10;
-                    break;
-                case "Ace":
-                    cardValue = OneOrEleven(isComputer);
-                    break;
-            }
-            return cardValue;
-        }
-        static int OneOrEleven(bool isComputer)
-        {
-            if (isComputer)
-            {
-                return 11;
-            }
-            else
-            {
-                int cardValue = 0;
-                Console.Write("You have an Ace, is it worth '1' or '11'? ");
-                var cardValueAsString = Console.ReadLine();
-                while (cardValueAsString != "1" && cardValueAsString != "11")
+                switch (Rank)
                 {
-                    Console.Write("Please enter either '1' or '11' only: ");
-                    cardValueAsString = Console.ReadLine();
+                    case "2":
+                    case "3":
+                    case "4":
+                    case "5":
+                    case "6":
+                    case "7":
+                    case "8":
+                    case "9":
+                        return int.Parse(Rank);
+                    case "10":
+                    case "Jack":
+                    case "Queen":
+                    case "King":
+                        return 10;
+                    case "Ace":
+                        return OneOrEleven(isComputer);
+                    default:
+                        return 0;
                 }
-                cardValue = int.Parse(cardValueAsString);
-                return cardValue;
+                static int OneOrEleven(bool isComputer)
+                {
+                    if (isComputer)
+                    {
+                        return 11;
+                    }
+                    else
+                    {
+                        int cardValue = 0;
+                        Console.Write("You have an Ace, is it worth '1' or '11'? ");
+                        var cardValueAsString = Console.ReadLine();
+                        while (cardValueAsString != "1" && cardValueAsString != "11")
+                        {
+                            Console.Write("Please enter either '1' or '11' only: ");
+                            cardValueAsString = Console.ReadLine();
+                        }
+                        cardValue = int.Parse(cardValueAsString);
+                        return cardValue;
+                    }
+                }
             }
+        }
+        static List<Card> Build(List<Card> deckToBeBuilt)
+        {
+            var listOfSuits = new List<string>()
+                 {
+                    " of Spades", " of Clubs", " of Hearts", " of Diamonds"
+                  };
+            var listOfRanks = new List<string>()
+                 {
+                    "Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"
+                  };
+            foreach (var suit in listOfSuits)
+            {
+                foreach (var rank in listOfRanks)
+                {
+                    var newCard = new Card()
+                    {
+                        Rank = rank,
+                        Suit = suit,
+                    };
+                    deckToBeBuilt.Add(newCard);
+                }
+            }
+            return deckToBeBuilt;
+        }
+        static List<Card> Shuffle(List<Card> deckToBeShuffled)
+        // Method that shuffles deck on command
+        {
+            var lastUnmovedCardPosition = deckToBeShuffled.Count;
+            var randomNumber = 0;
+            var randomCardBasedOnRandomNumber = deckToBeShuffled[randomNumber];
 
+            while (lastUnmovedCardPosition-- > 0)
+            {
+                randomNumber = new Random().Next(0, lastUnmovedCardPosition);
+
+                randomCardBasedOnRandomNumber = deckToBeShuffled[randomNumber];
+                deckToBeShuffled[randomNumber] = deckToBeShuffled[lastUnmovedCardPosition];
+                deckToBeShuffled[lastUnmovedCardPosition] = randomCardBasedOnRandomNumber;
+            }
+            return deckToBeShuffled;
+        }
+        static List<Card> RemoveTwoCards(List<Card> deckBeforeRemoved)
+        // Method that Removes two cards from deck on command
+        {
+            deckBeforeRemoved.Remove(deckBeforeRemoved[0]);
+            deckBeforeRemoved.Remove(deckBeforeRemoved[0]);
+            return deckBeforeRemoved;
         }
         static void Welcome()
         {
@@ -137,160 +281,6 @@ namespace BlackJackCS
                 Console.WriteLine($"and {listOfPlayers[listOfPlayers.Count - 1].PlayerName}!\n");
             }
         }
-        static List<Player> Roster(List<Player> playersToBeAdded, int numberOfPlayers, int startingPoints)
-        {
-            for (var i = 1; i <= numberOfPlayers; i++)
-            {
-                Console.Write($"What is Player {i}'s name? ");
-                var newPlayer = new Player()
-                {
-                    PlayerNumber = i,
-                    Wins = 0,
-                    TotalPoints = startingPoints,
-                    PlayerName = Console.ReadLine(),
-                };
-                playersToBeAdded.Add(newPlayer);
-                Console.WriteLine($"Got it. Welcome {newPlayer.PlayerName}!\n");
-            }
-            return playersToBeAdded;
-        }
-        static List<Card> Build(List<Card> deckToBeBuilt)
-        {
-            var listOfSuits = new List<string>()
-                 {
-                    " of Spades", " of Clubs", " of Hearts", " of Diamonds"
-                  };
-            var listOfRanks = new List<string>()
-                 {
-                    "Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"
-                  };
-            foreach (var suit in listOfSuits)
-            {
-                foreach (var rank in listOfRanks)
-                {
-                    var newCard = new Card()
-                    {
-                        Rank = rank,
-                        Suit = suit,
-                    };
-                    deckToBeBuilt.Add(newCard);
-                }
-            }
-            return deckToBeBuilt;
-        }
-        static List<Card> Shuffle(List<Card> deckToBeShuffled)
-        // Method that shuffles deck on command
-        {
-            var lastUnmovedCardPosition = deckToBeShuffled.Count;
-            var randomNumber = 0;
-            var randomCardBasedOnRandomNumber = deckToBeShuffled[randomNumber];
-
-            while (lastUnmovedCardPosition-- > 0)
-            {
-                randomNumber = new Random().Next(0, lastUnmovedCardPosition);
-
-                randomCardBasedOnRandomNumber = deckToBeShuffled[randomNumber];
-                deckToBeShuffled[randomNumber] = deckToBeShuffled[lastUnmovedCardPosition];
-                deckToBeShuffled[lastUnmovedCardPosition] = randomCardBasedOnRandomNumber;
-            }
-            return deckToBeShuffled;
-        }
-        static List<Card> RemoveTwoCards(List<Card> deckBeforeRemoved)
-        // Method that Removes two cards from deck on command
-        {
-            deckBeforeRemoved.Remove(deckBeforeRemoved[0]);
-            deckBeforeRemoved.Remove(deckBeforeRemoved[0]);
-            return deckBeforeRemoved;
-        }
-        static Player PlaceBets(Player player)
-        {
-            Console.Write("In increments of 20, how many chips would you like to bet this round? ");
-            var individualBetAsString = Console.ReadLine();
-            while (player.PointsBetThisRound == 0)
-            {
-                switch (individualBetAsString)
-                {
-                    case "20":
-                        if (player.TotalPoints == 20)
-                        {
-                            Console.WriteLine($"\n{player.PlayerName}...you better win this round...");
-                            Console.WriteLine("...or you're going to have no chips left...\n");
-                            player.PointsBetThisRound = 20;
-                            break;
-                        }
-                        else
-                        {
-                            player.PointsBetThisRound = 20;
-                            break;
-                        }
-                    case "40":
-                        if (player.TotalPoints < 40)
-                        {
-                            Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
-                            individualBetAsString = Console.ReadLine();
-                            break;
-                        }
-                        else
-                        {
-                            player.PointsBetThisRound = 40;
-                            break;
-                        }
-                    case "60":
-                        if (player.TotalPoints < 60)
-                        {
-                            Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
-                            individualBetAsString = Console.ReadLine();
-                            break;
-                        }
-                        else
-                        {
-                            player.PointsBetThisRound = 60;
-                            break;
-                        }
-                    case "80":
-                        if (player.TotalPoints < 80)
-                        {
-                            Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
-                            individualBetAsString = Console.ReadLine();
-                            break;
-                        }
-                        else
-                        {
-                            player.PointsBetThisRound = 80;
-                            break;
-                        }
-                    case "100":
-                        if (player.TotalPoints < 100)
-                        {
-                            Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
-                            individualBetAsString = Console.ReadLine();
-                            break;
-                        }
-                        else
-                        {
-                            player.PointsBetThisRound = 100;
-                            break;
-                        }
-                    default:
-                        Console.Write("\nPlease bet either '20', '40', '60', '80' or '100' chips: ");
-                        individualBetAsString = Console.ReadLine();
-                        break;
-                }
-            }
-            return player;
-        }
-        static Player AddChips(Player player)
-        {
-            player.TotalPoints = player.TotalPoints + player.PointsBetThisRound;
-            player.PointsBetThisRound = 0;
-            return player;
-        }
-        static Player RemoveChips(Player player)
-        {
-            player.TotalPoints = player.TotalPoints - player.PointsBetThisRound;
-            player.PointsBetThisRound = 0;
-            return player;
-        }
         static List<Player> PlayBlackjack(List<Player> listOfPlayers, bool keepingScore)
         {
             var deck = new List<Card>();
@@ -314,7 +304,7 @@ namespace BlackJackCS
                 {
                     if (player.TotalPoints != 0)
                     {
-                        PlaceBets(player);
+                        player.PlaceBets();
                     }
                     else
                     {
@@ -357,7 +347,7 @@ namespace BlackJackCS
                 {
                     Console.WriteLine($"\nYou busted, {player.PlayerName}! You lost this round\n");
                     if (keepingScore)
-                        RemoveChips(player);
+                        player.RemoveChips();
                 }
                 else if (player.TotalCardsInHandValue() == 21)
                 {
@@ -381,7 +371,7 @@ namespace BlackJackCS
                     {
                         player.Wins++;
                         if (keepingScore)
-                            AddChips(player);
+                            player.AddChips();
                     }
                 }
             }
@@ -393,20 +383,20 @@ namespace BlackJackCS
                     {
                         Console.WriteLine($"{player.PlayerName} lost to the Dealer this round\n");
                         if (keepingScore)
-                            RemoveChips(player);
+                            player.RemoveChips();
                     }
                     else if (computer.TotalCardsInHandValue() < player.TotalCardsInHandValue() && player.TotalCardsInHandValue() <= 21)
                     {
                         Console.WriteLine($"{player.PlayerName} beat the Dealer this round!\n");
                         if (keepingScore)
-                            AddChips(player);
+                            player.AddChips();
                         player.Wins++;
                     }
                     else if (computer.TotalCardsInHandValue() == player.TotalCardsInHandValue())
                     {
-                        Console.WriteLine($"{player.PlayerName} tied the with Dealer. The Dealer wins by default\n");
+                        Console.WriteLine($"{player.PlayerName} tied with the Dealer. The Dealer wins by default\n");
                         if (keepingScore)
-                            RemoveChips(player);
+                            player.RemoveChips();
                     }
                 }
             }
@@ -422,18 +412,19 @@ namespace BlackJackCS
                 {
                     Console.WriteLine("The table is still going strong!");
                 }
-                else if (hasPointsLeft == 2 || (listOfPlayers.Count == 1 && listOfPlayers[0].TotalPoints < 40))
+                else if ((hasPointsLeft == 2 && listOfPlayers.Count != 2) || (listOfPlayers.Count == 1 && listOfPlayers[0].TotalPoints < 40))
                 {
                     Console.WriteLine("The table is a bit shakey! Someone's going to lose soon, maybe!");
                 }
-                else
+                else if ((hasPointsLeft == 1 && listOfPlayers.Count <= 2) || (listOfPlayers.Count == 1 && listOfPlayers[0].TotalPoints == 0))
                 {
                     foreach (var player in listOfPlayers)
                     {
                         if (player.TotalPoints != 0)
                             Console.WriteLine($"{player.PlayerName} won the game!");
                     }
-                    Console.WriteLine("\n\nGet out of here! You don't bet points, lose all your points, and then keep playing!");
+                    Console.WriteLine("\n\nGet out of here!");
+                    Console.WriteLine("You don't bet points, lose all your points, and then keep playing!");
                     Console.WriteLine("No seriously, what do you think you're still doing here?");
                     Console.WriteLine("If you want a sandbox, don't keep score next time!\n\n");
                     Goodbye();
