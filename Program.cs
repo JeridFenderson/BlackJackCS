@@ -20,6 +20,8 @@ namespace BlackJackCS
             public int TotalPoints { get; set; }
             public int PointsBetThisRound { get; set; }
             public bool IsComputer = false;
+            public bool DoubledDown = false;
+            public bool Surrendered = false;
             public int TotalCardsInHandValue()
             {
                 var cardValueCounter = 0;
@@ -39,74 +41,86 @@ namespace BlackJackCS
                 var individualBetAsString = Console.ReadLine();
                 while (PointsBetThisRound == 0)
                 {
-                    switch (individualBetAsString)
+                    if (TotalPoints >= 20)
                     {
-                        case "20":
-                            if (TotalPoints == 20)
-                            {
-                                Console.WriteLine($"\n{PlayerName}...you better win this round...");
-                                Console.WriteLine("...or you're going to have no chips left...\n");
-                                PointsBetThisRound = 20;
-                                break;
-                            }
-                            else
-                            {
-                                PointsBetThisRound = 20;
-                                break;
-                            }
-                        case "40":
-                            if (TotalPoints < 40)
-                            {
-                                Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                        switch (individualBetAsString)
+                        {
+                            case "20":
+                                if (TotalPoints == 20)
+                                {
+                                    Console.WriteLine($"\n{PlayerName}...you better win this round...");
+                                    Console.WriteLine("...or you're going to have no chips left...\n");
+                                    PointsBetThisRound = 20;
+                                    break;
+                                }
+                                else
+                                {
+                                    PointsBetThisRound = 20;
+                                    break;
+                                }
+                            case "40":
+                                if (TotalPoints < 40)
+                                {
+                                    Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                                    individualBetAsString = Console.ReadLine();
+                                    break;
+                                }
+                                else
+                                {
+                                    PointsBetThisRound = 40;
+                                    break;
+                                }
+                            case "60":
+                                if (TotalPoints < 60)
+                                {
+                                    Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                                    individualBetAsString = Console.ReadLine();
+                                    break;
+                                }
+                                else
+                                {
+                                    PointsBetThisRound = 60;
+                                    break;
+                                }
+                            case "80":
+                                if (TotalPoints < 80)
+                                {
+                                    Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                                    individualBetAsString = Console.ReadLine();
+                                    break;
+                                }
+                                else
+                                {
+                                    PointsBetThisRound = 80;
+                                    break;
+                                }
+                            case "100":
+                                if (TotalPoints < 100)
+                                {
+                                    Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
+                                    individualBetAsString = Console.ReadLine();
+                                    break;
+                                }
+                                else
+                                {
+                                    PointsBetThisRound = 100;
+                                    break;
+                                }
+                            default:
+                                Console.Write("\nPlease bet either '20', '40', '60', '80' or '100' chips: ");
                                 individualBetAsString = Console.ReadLine();
                                 break;
-                            }
-                            else
-                            {
-                                PointsBetThisRound = 40;
-                                break;
-                            }
-                        case "60":
-                            if (TotalPoints < 60)
-                            {
-                                Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
-                                individualBetAsString = Console.ReadLine();
-                                break;
-                            }
-                            else
-                            {
-                                PointsBetThisRound = 60;
-                                break;
-                            }
-                        case "80":
-                            if (TotalPoints < 80)
-                            {
-                                Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
-                                individualBetAsString = Console.ReadLine();
-                                break;
-                            }
-                            else
-                            {
-                                PointsBetThisRound = 80;
-                                break;
-                            }
-                        case "100":
-                            if (TotalPoints < 100)
-                            {
-                                Console.Write("\nYou don't have the chips my friend. Please bet lower: ");
-                                individualBetAsString = Console.ReadLine();
-                                break;
-                            }
-                            else
-                            {
-                                PointsBetThisRound = 100;
-                                break;
-                            }
-                        default:
-                            Console.Write("\nPlease bet either '20', '40', '60', '80' or '100' chips: ");
-                            individualBetAsString = Console.ReadLine();
-                            break;
+                        }
                     }
+                    else
+                    {
+                        Console.WriteLine($"\n{PlayerName}...you better win this round...");
+                        Console.WriteLine("...or you're going to have no chips left...\n");
+                        Console.WriteLine("...you only have 10 chips left to begin with...\n");
+                        Console.WriteLine("...those 10 chips were bet for you...\n");
+                        PointsBetThisRound = 10;
+                    }
+
                 }
             }
             public void AddChips()
@@ -117,6 +131,11 @@ namespace BlackJackCS
             public void RemoveChips()
             {
                 TotalPoints = TotalPoints - PointsBetThisRound;
+                PointsBetThisRound = 0;
+            }
+            public void Surrender()
+            {
+                TotalPoints = TotalPoints - PointsBetThisRound / 2;
                 PointsBetThisRound = 0;
             }
         }
@@ -332,59 +351,114 @@ namespace BlackJackCS
                 Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
 
                 var playerChoice = "";
-                while (player.TotalCardsInHandValue() < 21 && playerChoice.ToLower() != "stand")
+                while (player.TotalCardsInHandValue() < 21 && playerChoice != "stand")
                 {
-                    Console.Write($"\nWould you like to 'hit' or 'stand' {player.PlayerName}? ");
-                    playerChoice = Console.ReadLine();
+                    Console.Write($"\nWhat would you like to do {player.PlayerName}? ");
+                    playerChoice = Console.ReadLine().ToLower();
                     Console.WriteLine("");
                     var currentCardInHand = 2;
-                    if (playerChoice.ToLower() == "hit")
+                    switch (playerChoice)
                     {
-                        player.CardsInHand.Add(deck[0]);
-                        deck.Remove(deck[0]);
-                        Console.WriteLine($"You've been dealt a {player.CardsInHand[currentCardInHand].Rank}{player.CardsInHand[currentCardInHand].Suit}");
-                        Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
-                        currentCardInHand++;
-                    }
-                    else if (playerChoice.ToLower() == "stand")
-                    {
-                        Console.WriteLine("Moving onto next hand...\n");
-                    }
-                    else if (playerChoice.ToLower() != "hit" || playerChoice.ToLower() != "stand")
-                    {
-                        Console.WriteLine("Please either enter 'hit' or 'stand'");
-                        Console.WriteLine("It's not case sensitive, but it is spelling sensitive");
+                        case "hit":
+                            player.CardsInHand.Add(deck[0]);
+                            deck.Remove(deck[0]);
+                            Console.WriteLine($"You've been dealt a {player.CardsInHand[currentCardInHand].Rank}{player.CardsInHand[currentCardInHand].Suit}");
+                            Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
+                            currentCardInHand++;
+                            break;
+                        case "stand":
+                            Console.WriteLine("Moving onto next hand...\n");
+                            break;
+                        case "surrender":
+                            if (keepingScore)
+                            {
+                                player.Surrendered = true;
+                                player.Surrender();
+                                playerChoice = "stand";
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Please enter either 'hit' or 'stand', you're not keeping score");
+                                Console.Write("It's not case sensitive, but it is spelling sensitive: ");
+                                playerChoice = Console.ReadLine();
+                                break;
+                            }
+                        case "double down":
+                            if (keepingScore)
+                            {
+
+                            }
+                            else
+                            {
+                                Console.WriteLine("Please enter either 'hit' or 'stand', you're not keeping score");
+                                Console.Write("It's not case sensitive, but it is spelling sensitive: ");
+                                playerChoice = Console.ReadLine();
+                            }
+                            break;
+                        default:
+                            if (keepingScore)
+                            {
+                                Console.WriteLine("Please enter 'hit', 'stand', 'surrender' or 'double down'");
+                                Console.Write("It's not case sensitive, but it is spelling sensitive: ");
+                                playerChoice = Console.ReadLine();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Please enter either 'hit' or 'stand'");
+                                Console.Write("It's not case sensitive, but it is spelling sensitive: ");
+                                playerChoice = Console.ReadLine();
+                            }
+                            break;
                     }
                 }
-                if (player.TotalCardsInHandValue() > 21)
+                if (player.Surrendered)
                 {
-                    Console.WriteLine($"\nYou busted, {player.PlayerName}! You lost this round\n");
-                    if (keepingScore)
-                        player.RemoveChips();
-                }
-                else if (player.TotalCardsInHandValue() == 21)
-                {
-                    Console.WriteLine($"\nYou have 21, {player.PlayerName}! You're not hitting again!\n");
+                    Console.WriteLine($"You've successfully surrendered this round, {player.PlayerName}\n");
                 }
                 else
                 {
-                    while (computer.TotalCardsInHandValue() < 17)
+                    if (player.TotalCardsInHandValue() > 21)
                     {
-                        computer.CardsInHand.Add(deck[0]);
-                        deck.Remove(deck[0]);
+                        Console.WriteLine($"\nYou busted, {player.PlayerName}! You lost this round\n");
+                        if (keepingScore)
+                            player.RemoveChips();
+                    }
+                    else if (player.TotalCardsInHandValue() == 21)
+                    {
+                        Console.WriteLine($"\nYou have 21, {player.PlayerName}! You're not hitting again!\n");
+                    }
+                    else
+                    {
+                        while (computer.TotalCardsInHandValue() < 17)
+                        {
+                            computer.CardsInHand.Add(deck[0]);
+                            deck.Remove(deck[0]);
+                        }
                     }
                 }
             }
             if (computer.TotalCardsInHandValue() > 21)
             {
-                Console.WriteLine("\nThe Dealer busted! Everyone who didn't bust won this round\n");
+                if (keepingScore)
+                {
+                    Console.WriteLine("\nThe Dealer busted! Everyone who didn't bust or surrender won this round\n");
+                }
+                else
+                {
+                    Console.WriteLine("\nThe Dealer busted! Everyone who didn't bust won this round\n");
+                }
                 foreach (var player in listOfPlayers)
                 {
-                    if (player.TotalCardsInHandValue() <= 21)
+                    if (player.TotalCardsInHandValue() <= 21 && !player.Surrendered)
                     {
                         player.Wins++;
                         if (keepingScore)
                             player.AddChips();
+                    }
+                    else
+                    {
+                        player.Surrendered = false;
                     }
                 }
             }
@@ -392,24 +466,31 @@ namespace BlackJackCS
             {
                 foreach (var player in listOfPlayers)
                 {
-                    if (computer.TotalCardsInHandValue() > player.TotalCardsInHandValue())
+                    if (player.Surrendered)
                     {
-                        Console.WriteLine($"{player.PlayerName} lost to the Dealer this round\n");
-                        if (keepingScore)
-                            player.RemoveChips();
+                        Console.WriteLine($"{player.PlayerName} surrendered. They lose half of their bid\n");
                     }
-                    else if (computer.TotalCardsInHandValue() < player.TotalCardsInHandValue() && player.TotalCardsInHandValue() <= 21)
+                    else
                     {
-                        Console.WriteLine($"{player.PlayerName} beat the Dealer this round!\n");
-                        if (keepingScore)
-                            player.AddChips();
-                        player.Wins++;
-                    }
-                    else if (computer.TotalCardsInHandValue() == player.TotalCardsInHandValue())
-                    {
-                        Console.WriteLine($"{player.PlayerName} tied with the Dealer. The Dealer wins by default\n");
-                        if (keepingScore)
-                            player.RemoveChips();
+                        if (computer.TotalCardsInHandValue() > player.TotalCardsInHandValue())
+                        {
+                            Console.WriteLine($"{player.PlayerName} lost to the Dealer this round\n");
+                            if (keepingScore)
+                                player.RemoveChips();
+                        }
+                        else if (computer.TotalCardsInHandValue() < player.TotalCardsInHandValue() && player.TotalCardsInHandValue() <= 21)
+                        {
+                            Console.WriteLine($"{player.PlayerName} beat the Dealer this round!\n");
+                            if (keepingScore)
+                                player.AddChips();
+                            player.Wins++;
+                        }
+                        else if (computer.TotalCardsInHandValue() == player.TotalCardsInHandValue())
+                        {
+                            Console.WriteLine($"{player.PlayerName} tied with the Dealer. The Dealer wins by default\n");
+                            if (keepingScore)
+                                player.RemoveChips();
+                        }
                     }
                 }
             }
