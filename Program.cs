@@ -524,8 +524,7 @@ namespace BlackJackCS
                         break;
                 }
             }
-            Console.WriteLine("");
-            Console.Write("Do you want a betting system that keeps a points based score? ");
+            Console.Write("\nDo you want a betting system that keeps a points based score? ");
             var toKeepScore = Console.ReadLine();
             while (toKeepScore != "yes" && toKeepScore != "no")
             {
@@ -536,14 +535,12 @@ namespace BlackJackCS
             {
                 scoreKeeper = true;
                 points = 100;
-                Console.WriteLine("Keeping score, you all will start out with 100 chips");
+                Console.WriteLine("Keeping score, you all will start out with 100 chips\n");
             }
             else
             {
-                Console.WriteLine("Ok, got it. No active score will be kept this game");
+                Console.WriteLine("Ok, got it. No active score will be kept this game\n");
             }
-
-            Console.WriteLine("");
             var listOfPlayers = new List<Player>();
             listOfPlayers = new List<Player>(Roster(listOfPlayers, numOfPlayers, points));
 
