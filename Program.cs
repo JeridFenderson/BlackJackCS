@@ -370,57 +370,87 @@ namespace BlackJackCS
                 Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
 
                 var playerChoice = "";
-                while (player.TotalCardsInHandValue() < 21 && playerChoice != "stand")
+                while (player.TotalCardsInHandValue() <= 21 && playerChoice != "stand")
                 {
                     Console.Write($"\nWhat would you like to do {player.PlayerName}? ");
                     playerChoice = Console.ReadLine().ToLower();
                     Console.WriteLine("");
                     var currentCardInHand = 2;
+                    var alreadyHitOnce = false;
                     switch (playerChoice)
                     {
                         case "hit":
-                            player.CardsInHand.Add(deck[0]);
-                            deck.Remove(deck[0]);
-                            Console.WriteLine($"You've been dealt a {player.CardsInHand[currentCardInHand].Rank}{player.CardsInHand[currentCardInHand].Suit}");
-                            Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
-                            currentCardInHand++;
-                            break;
-                        case "stand":
-                            Console.WriteLine("Moving onto next hand...\n");
-                            break;
-                        case "surrender":
-                            if (keepingScore)
+                            alreadyHitOnce = true;
+                            if (player.TotalCardsInHandValue() == 21)
                             {
-                                player.Surrendered = true;
-                                player.Surrender();
                                 playerChoice = "stand";
                                 break;
                             }
                             else
                             {
-                                Console.WriteLine("Please enter either 'hit' or 'stand', you're not keeping score");
-                                Console.Write("It's not case sensitive, but it is spelling sensitive: ");
+                                player.CardsInHand.Add(deck[0]);
+                                deck.Remove(deck[0]);
+                                Console.WriteLine($"You've been dealt a {player.CardsInHand[currentCardInHand].Rank}{player.CardsInHand[currentCardInHand].Suit}");
+                                Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
+                                currentCardInHand++;
+                                break;
+                            }
+                        case "stand":
+                            Console.WriteLine("Moving onto next hand...\n");
+                            break;
+                        case "surrender":
+                            if (alreadyHitOnce)
+                            {
+                                Console.WriteLine("You can't double down once you've already hit");
+                                Console.Write("Please enter either 'hit' or 'stand': ");
                                 playerChoice = Console.ReadLine();
                                 break;
                             }
-                        case "double down":
-                            if (keepingScore)
+                            else
                             {
-                                if (!player.DoubledDown)
+                                if (keepingScore)
                                 {
-                                    player.DoubledDown = true;
-                                    Console.WriteLine("You have successfully doubled down!\n");
+                                    player.Surrendered = true;
+                                    player.Surrender();
+                                    playerChoice = "stand";
+                                    break;
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Don't be greedy, you can't double down twice\n");
+                                    Console.WriteLine("Please enter either 'hit' or 'stand', you're not keeping score");
+                                    Console.Write("It's not case sensitive, but it is spelling sensitive: ");
+                                    playerChoice = Console.ReadLine();
+                                    break;
                                 }
+                            }
+                        case "double down":
+                            if (alreadyHitOnce)
+                            {
+                                Console.WriteLine("You can't double down once you've already hit");
+                                Console.Write("Please enter either 'hit' or 'stand': ");
+                                playerChoice = Console.ReadLine();
+                                break;
                             }
                             else
                             {
-                                Console.WriteLine("Please enter either 'hit' or 'stand', you're not keeping score");
-                                Console.Write("It's not case sensitive, but it is spelling sensitive: ");
-                                playerChoice = Console.ReadLine();
+                                if (keepingScore)
+                                {
+                                    if (!player.DoubledDown)
+                                    {
+                                        player.DoubledDown = true;
+                                        Console.WriteLine("You have successfully doubled down!\n");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Don't be greedy, you can't double down twice\n");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Please enter either 'hit' or 'stand', you're not keeping score");
+                                    Console.Write("It's not case sensitive, but it is spelling sensitive: ");
+                                    playerChoice = Console.ReadLine();
+                                }
                             }
                             break;
                         default:
@@ -432,7 +462,7 @@ namespace BlackJackCS
                             }
                             else
                             {
-                                Console.WriteLine("Please enter either 'hit' or 'stand'");
+                                Console.WriteLine("Please enter either 'hit' or 'stand': ");
                                 Console.Write("It's not case sensitive, but it is spelling sensitive: ");
                                 playerChoice = Console.ReadLine();
                             }
