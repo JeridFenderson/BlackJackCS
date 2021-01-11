@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace BlackJackCS
 {
+    // Created by Jerid Fenderson
+    // Suncoast Developers Guild
+    // Cohort-20
+    // Created January 8th, 2021
+    // Last modified January 11th, 2021
     class Program
     {
         class Player
