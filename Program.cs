@@ -375,7 +375,6 @@ namespace BlackJackCS
                     Console.Write($"\nWhat would you like to do {player.PlayerName}? ");
                     playerChoice = Console.ReadLine().ToLower();
                     Console.WriteLine("");
-                    var currentCardInHand = 2;
                     switch (playerChoice)
                     {
                         case "hit":
@@ -389,9 +388,8 @@ namespace BlackJackCS
                             {
                                 player.CardsInHand.Add(deck[0]);
                                 deck.Remove(deck[0]);
-                                Console.WriteLine($"You've been dealt a {player.CardsInHand[currentCardInHand].Rank}{player.CardsInHand[currentCardInHand].Suit}");
+                                Console.WriteLine($"You've been dealt a {player.CardsInHand[player.CardsInHand.Count - 1].Rank}{player.CardsInHand[player.CardsInHand.Count - 1].Suit}");
                                 Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
-                                currentCardInHand++;
                                 break;
                             }
                         case "stand":
