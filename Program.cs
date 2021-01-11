@@ -89,7 +89,14 @@ namespace BlackJackCS
         static void Welcome()
         {
             Console.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~");
-            Console.WriteLine("Welcome to Black Jack");
+            Console.WriteLine("Welcome to Blackjack!");
+            Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~\n");
+        }
+        static void Goodbye()
+        {
+            Console.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~");
+            Console.WriteLine("Thanks for Blackjack!");
+            Console.WriteLine("Created by Jerid Fenderson");
             Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~\n");
         }
         static void Help()
@@ -429,6 +436,7 @@ namespace BlackJackCS
                     Console.WriteLine("\n\nGet out of here! You don't bet points, lose all your points, and then keep playing!");
                     Console.WriteLine("No seriously, what do you think you're still doing here?");
                     Console.WriteLine("If you want a sandbox, don't keep score next time!\n\n");
+                    Goodbye();
                     System.Environment.Exit(0);
                 }
             }
@@ -573,6 +581,7 @@ namespace BlackJackCS
                         break;
                 }
             }
+            Goodbye();
         }
     }
 }
