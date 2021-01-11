@@ -20,6 +20,7 @@ namespace BlackJackCS
             public int TotalPoints { get; set; }
             public int PointsBetThisRound { get; set; }
             public bool IsComputer = false;
+            public bool WonRound = false;
             public bool DoubledDown = false;
             public bool Surrendered = false;
             public int TotalCardsInHandValue()
@@ -125,13 +126,29 @@ namespace BlackJackCS
             }
             public void AddChips()
             {
-                TotalPoints = TotalPoints + PointsBetThisRound;
-                PointsBetThisRound = 0;
+                if (DoubledDown)
+                {
+                    TotalPoints = TotalPoints + PointsBetThisRound * 2;
+                    PointsBetThisRound = 0;
+                }
+                else
+                {
+                    TotalPoints = TotalPoints + PointsBetThisRound;
+                    PointsBetThisRound = 0;
+                }
             }
             public void RemoveChips()
             {
-                TotalPoints = TotalPoints - PointsBetThisRound;
-                PointsBetThisRound = 0;
+                if (DoubledDown)
+                {
+                    TotalPoints = TotalPoints - PointsBetThisRound * 2;
+                    PointsBetThisRound = 0;
+                }
+                else
+                {
+                    TotalPoints = TotalPoints - PointsBetThisRound;
+                    PointsBetThisRound = 0;
+                }
             }
             public void Surrender()
             {
@@ -330,6 +347,8 @@ namespace BlackJackCS
             foreach (var player in listOfPlayers)
             {
                 player.CardsInHand = new List<Card>() { deck[0], deck[1] };
+                player.Surrendered = false;
+                player.DoubledDown = false;
                 deck = new List<Card>(RemoveTwoCards(deck));
                 Console.WriteLine($"It's your turn {player.PlayerName}");
                 if (keepingScore)
@@ -387,7 +406,15 @@ namespace BlackJackCS
                         case "double down":
                             if (keepingScore)
                             {
-
+                                if (!player.DoubledDown)
+                                {
+                                    player.DoubledDown = true;
+                                    Console.WriteLine("You have successfully doubled down!\n");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Don't be greedy, you can't double down twice\n");
+                                }
                             }
                             else
                             {
@@ -455,10 +482,6 @@ namespace BlackJackCS
                         player.Wins++;
                         if (keepingScore)
                             player.AddChips();
-                    }
-                    else
-                    {
-                        player.Surrendered = false;
                     }
                 }
             }
