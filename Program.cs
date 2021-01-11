@@ -368,15 +368,14 @@ namespace BlackJackCS
                     Console.WriteLine($"You've been dealt a {card.Rank}{card.Suit}");
                 }
                 Console.WriteLine($"Right now, you're at {player.TotalCardsInHandValue()}");
-
                 var playerChoice = "";
+                var alreadyHitOnce = false;
                 while (player.TotalCardsInHandValue() <= 21 && playerChoice != "stand")
                 {
                     Console.Write($"\nWhat would you like to do {player.PlayerName}? ");
                     playerChoice = Console.ReadLine().ToLower();
                     Console.WriteLine("");
                     var currentCardInHand = 2;
-                    var alreadyHitOnce = false;
                     switch (playerChoice)
                     {
                         case "hit":
